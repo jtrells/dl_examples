@@ -5,6 +5,8 @@ from __future__ import print_function
 import numpy as np
 import tensorflow as tf
 
+model_folder = '/home/curation/mnist_convnet_model'
+
 tf.loggin.set_verbosity(tf.logging.INFO)
 
 def cnn_model_fn(features, labels, mode):
@@ -98,7 +100,7 @@ def main(unused_argv):
 
 	# Create the Estimator
 	mnist_classifier = tf.estimator.Estimator(
-		model_fn=cnn_model_fn, model_dir="/home/mnist_convnet_model")
+		model_fn=cnn_model_fn, model_dir=model_folder)
 	# Set up logging for predictions
 	tensors_to_log = {"probabilities": "softmax_tensor"}
 	logging_hook = tf.train.LoggingTensorHook(
