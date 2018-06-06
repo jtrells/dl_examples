@@ -7,7 +7,7 @@ import tensorflow as tf
 
 model_folder = '/home/curation/mnist_convnet_model'
 
-tf.loggin.set_verbosity(tf.logging.INFO)
+tf.logging.set_verbosity(tf.logging.INFO)
 
 def cnn_model_fn(features, labels, mode):
 	"""Model function for CNN"""
@@ -29,7 +29,7 @@ def cnn_model_fn(features, labels, mode):
 	# First max pooling layer with a 2x2 filter and stride of 2
 	# Input Tensor Shape: [batch_size, 28, 28, 32]
 	# Output Tensor Shape: [batch_size, 14, 14, 32]
-	pool1 = tf.layers.max_pooling2d(input=conv1, pool_size=[2,2], strides=2)
+	pool1 = tf.layers.max_pooling2d(inputs=conv1, pool_size=[2,2], strides=2)
 
 	# Convolutional Layer #2
 	# Second max pooling layer with a 2x2 filter and stride of 2
@@ -45,7 +45,7 @@ def cnn_model_fn(features, labels, mode):
 	# Flatten tensor into a batch of vectors
 	# Input Tensor Shape: [batch_size, 7, 7, 64]
 	# Output Tensor Shape: [batch_size, 7 * 7 * 64]
-	pool2 = tf.layers.max_pooling2d(inputs=conv2d, pool_size=[2,2], strides=2)
+	pool2 = tf.layers.max_pooling2d(inputs=conv2, pool_size=[2,2], strides=2)
 
   	# Dense Layer
 	# Densely connected layer with 1024 neurons
@@ -58,11 +58,11 @@ def cnn_model_fn(features, labels, mode):
 	# Logits Layer
 	# Input Tensor Shape: [batch_size, 1024]
   	# Output Tensor Shape: [batch_size, 10]
-	logits = tf.layers.dense(input=dropout, units=10)
+	logits = tf.layers.dense(inputs=dropout, units=10)
 
 	predictions = {
 		# Generate predictions (for PREDICT and EVAL mode)
-		"classes": tf.argmax(input=logits, axis=1)
+		"classes": tf.argmax(input=logits, axis=1),
 		# Add 'softmax_tensor' to the graph. It is used for PREDICT and by
 		# the 'logging_hook'.
 		"probabilities": tf.nn.softmax(logits, name="softmax_tensor")
@@ -83,12 +83,12 @@ def cnn_model_fn(features, labels, mode):
 		return tf.estimator.EstimatorSpec(mode=mode, loss=loss, train_op=train_op)
 
 	# Add evaluation metrics (for EVAL mode)
-	eval_metrics_ops = {
-		"accuracy": tf.metric.accuracy(
+	eval_metric_ops = {
+		"accuracy": tf.metrics.accuracy(
 			labels=labels, predictions=predictions["classes"]) 
 	}
 	return tf.estimator.EstimatorSpec(
-		mode=mode, loss=loss, eval_metrics_ops=eval_metrics_ops)
+		mode=mode, loss=loss, eval_metric_ops=eval_metric_ops)
 	
 def main(unused_argv):
 	# Load training and eval data
